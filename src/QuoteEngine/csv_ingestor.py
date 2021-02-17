@@ -1,0 +1,31 @@
+"""To ingest the CSV data.
+
+This is used to ingest the csv data using the abstarct ingestor class.
+"""
+
+
+from typing import List
+import pandas
+from .ingestor_interface import IngestorInterface
+from .quote_model import QuoteModel
+
+
+class CSVIngestor(IngestorInterface):
+    """Ingests CSV data."""
+
+    allowed_extensions = ['csv']
+
+    @classmethod
+    def parse(cls, path: str) -> List[QuoteModel]:
+        """Get CSV data and parse it into body and author."""
+        if not cls.can_ingest(path):
+            raise Exception('cannot ingest exception')
+
+        quotes = []
+        df = pandas.read_csv(path, header=0)
+
+        for index, row in df.iterrows():
+            new_quote = QuoteModel(row['body'], row['author'])
+            quotes.append(new_quote)
+
+        return quotes
